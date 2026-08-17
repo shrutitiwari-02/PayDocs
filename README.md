@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PayDocs - Official Software Documentation
 
-## Getting Started
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Architecture](#architecture)
+3. [Tech Stack](#tech-stack)
+4. [Prerequisites](#prerequisites)
+5. [Installation & Setup](#installation--setup)
+6. [Folder Structure](#folder-structure)
+7. [API Reference](#api-reference)
+8. [Testing](#testing)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Project Overview
+**PayDocs** is a comprehensive, full-stack monorepo application designed to streamline financial workflows and document management for small and medium-sized businesses. It provides powerful tools to generate payslips, calculate complex tax metrics (GST, CTC), and programmatically manipulate PDF documents (watermarking, merging, page numbering).
+
+## Architecture
+PayDocs utilizes an **NPM Workspaces Monorepo** architecture to enforce strict "Separation of Concerns" and maintain a "Single Source of Truth".
+
+The architecture is split into three primary workspaces:
+*   **`@paydocs/frontend`**: The user-facing client layer.
+*   **`@paydocs/backend`**: The robust API and background processing layer.
+*   **`@paydocs/shared`**: The central repository for cross-environment business logic. By importing algorithms from here, both the client and server are guaranteed to yield identical financial calculations.
+
+## Tech Stack
+*   **Frontend**: Next.js, React, Tailwind CSS, Shadcn UI, NextAuth.js
+*   **Backend**: Node.js, Express.js, Puppeteer (for dynamic PDF generation), PDF-Lib (for PDF manipulation)
+*   **Database**: SQLite (local, file-based database for simplicity), Prisma ORM
+*   **Testing**: Jest (Unit Testing), Puppeteer (End-to-End Automation)
+*   **Language**: TypeScript (across all workspaces for complete type safety)
+
+## Prerequisites
+Before running this project, ensure you have the following installed:
+*   [Node.js](https://nodejs.org/) (v18 or higher)
+*   NPM (comes with Node.js)
+
+## Installation & Setup
+
+1. **Install Dependencies**
+   Run the following command in the root directory (`c:\PayDocs`) to install dependencies across all workspaces:
+   ```bash
+   npm install
+   ```
+
+2. **Database Setup**
+   Navigate to the backend and initialize the SQLite database using Prisma:
+   ```bash
+   cd backend
+   npx prisma generate
+   npx prisma db push
+   ```
+
+3. **Start the Development Servers**
+   You will need two terminals running simultaneously to spin up the local environment.
+
+   **Terminal 1 (Backend Server):**
+   ```bash
+   cd backend
+   npm run dev
+   # Runs on http://localhost:3001
+   ```
+
+   **Terminal 2 (Frontend Client):**
+   ```bash
+   cd frontend
+   npm run dev
+   # Runs on http://localhost:3000
+   ```
+
+## Folder Structure
+
+```text
+c:\PayDocs\
+├── package.json              # Root config for NPM workspaces
+├── frontend/                 # @paydocs/frontend workspace
+│   ├── src/app/              # Next.js App Router (Pages & Layouts)
+│   ├── src/components/       # Reusable React components (UI & Templates)
+│   └── src/app/api/auth/     # NextAuth.js configuration
+├── backend/                  # @paydocs/backend workspace
+│   ├── src/server.ts         # Express server entry point
+│   ├── src/routes/           # API Endpoints (e.g., pdf.ts)
+│   ├── src/services/         # Business logic & Puppeteer integration
+│   └── prisma/               # Database schema and SQLite database
+└── shared/                   # @paydocs/shared workspace
+    ├── src/calc/             # Core financial algorithms (gst.ts, ctc.ts)
+    └── package.json          # Shared workspace config
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Reference
+The backend exposes a RESTful API running on port `3001`. Below are some of the key endpoints used by the frontend:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/api/pdf/watermark` | `POST` | Accepts a PDF file (`multipart/form-data`) and text. Returns a watermarked PDF. |
+| `/api/pdf/page-numbers` | `POST` | Accepts a PDF file. Stamps page numbers on the bottom right and returns the PDF. |
+| `/api/pdf/rotate` | `POST` | Accepts a PDF file. Rotates all pages by 90 degrees and returns the PDF. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*Note: Document generation (like Invoices and Payslips) relies on Puppeteer converting frontend HTML into PDFs dynamically.*
 
-## Learn More
+## Testing
+PayDocs maintains high reliability through automated testing. 
 
-To learn more about Next.js, take a look at the following resources:
+1. **Unit Tests (Financial Logic)**
+   To run the Jest tests ensuring the mathematical accuracy of the shared algorithms:
+   ```bash
+   cd shared
+   npm test
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **End-to-End (E2E) Browser Automation**
+   To simulate user interactions, upload dummy files, and verify the frontend-backend integration:
+   ```bash
+   cd tests
+   node e2e.js
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Generated by Antigravity.*

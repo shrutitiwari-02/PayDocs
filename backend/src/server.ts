@@ -112,6 +112,20 @@ const authMiddleware = (req: any, res: any, next: any) => {
   }
 };
 
+const optionalAuthMiddleware = (req: any, res: any, next: any) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = decoded;
+    } catch (err) {
+      // Ignore token verification errors for optional auth
+    }
+  }
+  next();
+};
+
 const PORT = process.env.PORT || 3001;
 
 app.get('/api/health', (req, res) => {
@@ -138,7 +152,7 @@ const pdfPayslipSchema = z.object({
   totalAmount: z.union([z.number(), z.string()]).optional(),
 });
 
-app.post('/api/pdf/payslip', authMiddleware, pdfLimiter, async (req, res) => {
+app.post('/api/pdf/payslip', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
   let browser;
   try {
     const parseResult = pdfPayslipSchema.safeParse(req.body);
@@ -157,8 +171,8 @@ app.post('/api/pdf/payslip', authMiddleware, pdfLimiter, async (req, res) => {
       margin: { top: '20px', right: '20px', bottom: '20px', left: '20px' }
     });
 
-    // Record History in Database if metadata is provided
-    const userId = (req as any).user.id;
+    // Record History in Database if metadata is provided & user is authenticated
+    const userId = (req as any).user?.id;
     if (type && entityName && totalAmount !== undefined) {
       const amountFloat = typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
       if (!isNaN(amountFloat)) {
@@ -184,7 +198,7 @@ app.post('/api/pdf/payslip', authMiddleware, pdfLimiter, async (req, res) => {
 });
 
 // Email Payslip Route
-app.post('/api/pdf/email-payslip', authMiddleware, pdfLimiter, async (req, res) => {
+app.post('/api/pdf/email-payslip', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
   let browser;
   try {
     const { html, employeeEmail, employeeName, payPeriod, totalAmount } = req.body;
@@ -207,7 +221,7 @@ app.post('/api/pdf/email-payslip', authMiddleware, pdfLimiter, async (req, res) 
     await sendPayslipEmail(employeeEmail, Buffer.from(pdfBuffer), employeeName, payPeriod);
 
     // Save history
-    const userId = (req as any).user.id;
+    const userId = (req as any).user?.id;
     if (totalAmount !== undefined) {
       const amountFloat = typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
       if (!isNaN(amountFloat)) {
@@ -232,7 +246,7 @@ app.post('/api/pdf/email-payslip', authMiddleware, pdfLimiter, async (req, res) 
 });
 
 // Email Invoice Route
-app.post('/api/pdf/email-invoice', authMiddleware, pdfLimiter, async (req, res) => {
+app.post('/api/pdf/email-invoice', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
   let browser;
   try {
     const { html, clientEmail, clientName, invoiceNumber, totalAmount } = req.body;
@@ -255,7 +269,7 @@ app.post('/api/pdf/email-invoice', authMiddleware, pdfLimiter, async (req, res) 
     await sendInvoiceEmail(clientEmail, Buffer.from(pdfBuffer), clientName, invoiceNumber);
 
     // Save history
-    const userId = (req as any).user.id;
+    const userId = (req as any).user?.id;
     if (totalAmount !== undefined) {
       const amountFloat = typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
       if (!isNaN(amountFloat)) {
@@ -280,7 +294,7 @@ app.post('/api/pdf/email-invoice', authMiddleware, pdfLimiter, async (req, res) 
 });
 
 // Email Quotation Route
-app.post('/api/pdf/email-quotation', authMiddleware, pdfLimiter, async (req, res) => {
+app.post('/api/pdf/email-quotation', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
   let browser;
   try {
     const { html, clientEmail, clientName, quotationNumber, totalAmount } = req.body;
@@ -303,7 +317,7 @@ app.post('/api/pdf/email-quotation', authMiddleware, pdfLimiter, async (req, res
     await sendQuotationEmail(clientEmail, Buffer.from(pdfBuffer), clientName, quotationNumber);
 
     // Save history
-    const userId = (req as any).user.id;
+    const userId = (req as any).user?.id;
     if (totalAmount !== undefined) {
       const amountFloat = typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
       if (!isNaN(amountFloat)) {
@@ -328,7 +342,7 @@ app.post('/api/pdf/email-quotation', authMiddleware, pdfLimiter, async (req, res
 });
 
 // Email Receipt Route
-app.post('/api/pdf/email-receipt', authMiddleware, pdfLimiter, async (req, res) => {
+app.post('/api/pdf/email-receipt', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
   let browser;
   try {
     const { html, clientEmail, clientName, receiptNumber, totalAmount } = req.body;
@@ -351,7 +365,7 @@ app.post('/api/pdf/email-receipt', authMiddleware, pdfLimiter, async (req, res) 
     await sendReceiptEmail(clientEmail, Buffer.from(pdfBuffer), clientName, receiptNumber);
 
     // Save history
-    const userId = (req as any).user.id;
+    const userId = (req as any).user?.id;
     if (totalAmount !== undefined) {
       const amountFloat = typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
       if (!isNaN(amountFloat)) {
@@ -376,7 +390,7 @@ app.post('/api/pdf/email-receipt', authMiddleware, pdfLimiter, async (req, res) 
 });
 
 // Bulk Generation Route
-app.post('/api/pdf/payslip/bulk', authMiddleware, pdfLimiter, (req, res) => {
+app.post('/api/pdf/payslip/bulk', optionalAuthMiddleware, pdfLimiter, (req, res) => {
   try {
     const { items } = req.body || {};
     if (!items || !Array.isArray(items)) return res.status(400).json({ error: 'Invalid items array' });

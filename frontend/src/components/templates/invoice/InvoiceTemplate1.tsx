@@ -9,6 +9,7 @@ export interface InvoiceTemplate1Props {
   invoiceNumber: string;
   issueDate: string;
   dueDate: string;
+  currencySymbol?: string;
 }
 
 export function InvoiceTemplate1({
@@ -18,7 +19,8 @@ export function InvoiceTemplate1({
   clientName,
   invoiceNumber,
   issueDate,
-  dueDate
+  dueDate,
+  currencySymbol = '₹'
 }: InvoiceTemplate1Props) {
   return (
     <div className="bg-white p-8 max-w-4xl mx-auto font-sans text-slate-800" style={{ width: '800px' }}>
@@ -64,8 +66,8 @@ export function InvoiceTemplate1({
               <tr key={item.id}>
                 <td className="py-4 px-4">{item.description}</td>
                 <td className="py-4 px-4 text-center">{item.quantity}</td>
-                <td className="py-4 px-4 text-right">₹ {item.rate.toFixed(2)}</td>
-                <td className="py-4 px-4 text-right font-medium">₹ {(item.quantity * item.rate).toFixed(2)}</td>
+                <td className="py-4 px-4 text-right">{currencySymbol} {item.rate.toFixed(2)}</td>
+                <td className="py-4 px-4 text-right font-medium">{currencySymbol} {(item.quantity * item.rate).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -76,21 +78,21 @@ export function InvoiceTemplate1({
         <div className="w-64 space-y-3">
           <div className="flex justify-between text-slate-600">
             <span>Subtotal</span>
-            <span>₹ {result.subtotal.toFixed(2)}</span>
+            <span>{currencySymbol} {result.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-slate-600">
             <span>Tax ({input.taxPercentage}%)</span>
-            <span>₹ {result.taxAmount.toFixed(2)}</span>
+            <span>{currencySymbol} {result.taxAmount.toFixed(2)}</span>
           </div>
           {(input.discountAmount ?? 0) > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Discount</span>
-              <span>- ₹ {(input.discountAmount ?? 0).toFixed(2)}</span>
+              <span>- {currencySymbol} {(input.discountAmount ?? 0).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between font-bold text-xl pt-3 border-t-2 border-slate-800">
             <span>Total</span>
-            <span className="text-indigo-600">₹ {result.grandTotal.toFixed(2)}</span>
+            <span className="text-indigo-600">{currencySymbol} {result.grandTotal.toFixed(2)}</span>
           </div>
         </div>
       </div>

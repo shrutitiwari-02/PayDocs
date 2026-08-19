@@ -8,6 +8,7 @@ export interface ReceiptProps {
   paymentMode: string;
   description: string;
   companyName: string;
+  currencySymbol?: string;
 }
 
 export const ReceiptTemplate: React.FC<ReceiptProps> = ({
@@ -17,7 +18,8 @@ export const ReceiptTemplate: React.FC<ReceiptProps> = ({
   amount,
   paymentMode,
   description,
-  companyName
+  companyName,
+  currencySymbol = '₹'
 }) => {
   return (
     <div className="w-full max-w-3xl mx-auto p-12 bg-white text-slate-800" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -54,7 +56,7 @@ export const ReceiptTemplate: React.FC<ReceiptProps> = ({
         </div>
         <div className="flex justify-between items-center pt-2">
           <span className="text-slate-900 font-bold text-xl">Amount Received</span>
-          <span className="text-3xl font-black text-indigo-600">₹ {amount.toFixed(2)}</span>
+          <span className="text-3xl font-black text-indigo-600">{currencySymbol} {amount.toFixed(2)}</span>
         </div>
       </div>
 

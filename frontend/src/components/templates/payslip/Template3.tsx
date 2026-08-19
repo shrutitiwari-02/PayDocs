@@ -9,7 +9,8 @@ export function Template3({
   employeeId,
   designation,
   department,
-  payPeriod
+  payPeriod,
+  currencySymbol = '₹'
 }: Template1Props) {
   return (
     <div className="bg-white p-12 max-w-4xl mx-auto font-mono text-black border border-black" style={{ width: '800px' }}>
@@ -45,21 +46,21 @@ export function Template3({
             <tbody>
               <tr>
                 <td className="py-1">BASIC SALARY</td>
-                <td className="py-1 text-right">{input.basic.toFixed(2)}</td>
+                <td className="py-1 text-right">{currencySymbol} {input.basic.toFixed(2)}</td>
               </tr>
               <tr>
                 <td className="py-1">HRA</td>
-                <td className="py-1 text-right">{input.hra.toFixed(2)}</td>
+                <td className="py-1 text-right">{currencySymbol} {input.hra.toFixed(2)}</td>
               </tr>
               {input.allowances?.map((item) => (
                 <tr key={item.id}>
                   <td className="py-1 uppercase">{item.name}</td>
-                  <td className="py-1 text-right">{item.amount.toFixed(2)}</td>
+                  <td className="py-1 text-right">{currencySymbol} {item.amount.toFixed(2)}</td>
                 </tr>
               ))}
               <tr>
                 <td className="py-2 mt-2 border-t-2 border-black font-bold uppercase">Total Earnings</td>
-                <td className="py-2 mt-2 border-t-2 border-black font-bold text-right">{result.grossPay.toFixed(2)}</td>
+                <td className="py-2 mt-2 border-t-2 border-black font-bold text-right">{currencySymbol} {result.grossPay.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -72,7 +73,7 @@ export function Template3({
               {input.deductions?.map((item) => (
                 <tr key={item.id}>
                   <td className="py-1 uppercase">{item.name}</td>
-                  <td className="py-1 text-right">{item.amount.toFixed(2)}</td>
+                  <td className="py-1 text-right">{currencySymbol} {item.amount.toFixed(2)}</td>
                 </tr>
               ))}
               {input.deductions.length === 0 && (
@@ -82,7 +83,7 @@ export function Template3({
               )}
               <tr>
                 <td className="py-2 mt-2 border-t-2 border-black font-bold uppercase">Total Deductions</td>
-                <td className="py-2 mt-2 border-t-2 border-black font-bold text-right">{result.totalDeductions.toFixed(2)}</td>
+                <td className="py-2 mt-2 border-t-2 border-black font-bold text-right">{currencySymbol} {result.totalDeductions.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
@@ -94,7 +95,7 @@ export function Template3({
           Net Pay
         </div>
         <div className="text-3xl font-bold">
-          {result.netPay.toFixed(2)} INR
+          {currencySymbol} {result.netPay.toFixed(2)}
         </div>
       </div>
       

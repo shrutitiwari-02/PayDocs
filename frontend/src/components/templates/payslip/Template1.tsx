@@ -11,6 +11,7 @@ export interface Template1Props {
   designation: string;
   department: string;
   payPeriod: string;
+  currencySymbol?: string;
 }
 
 export function Template1({
@@ -21,7 +22,8 @@ export function Template1({
   employeeId,
   designation,
   department,
-  payPeriod
+  payPeriod,
+  currencySymbol = '₹'
 }: Template1Props) {
   return (
     <div className="bg-white p-8 max-w-4xl mx-auto font-sans text-slate-800" style={{ width: '800px' }}>
@@ -61,22 +63,22 @@ export function Template1({
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Basic Salary</span>
-              <span>₹ {input.basic.toFixed(2)}</span>
+              <span>{currencySymbol} {input.basic.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span>House Rent Allowance (HRA)</span>
-              <span>₹ {input.hra.toFixed(2)}</span>
+              <span>{currencySymbol} {input.hra.toFixed(2)}</span>
             </div>
             {input.allowances?.map((item) => (
               <div key={item.id} className="flex justify-between">
                 <span>{item.name}</span>
-                <span>₹ {item.amount.toFixed(2)}</span>
+                <span>{currencySymbol} {item.amount.toFixed(2)}</span>
               </div>
             ))}
           </div>
           <div className="flex justify-between font-bold mt-4 pt-2 border-t border-slate-200">
             <span>Total Earnings</span>
-            <span>₹ {result.grossPay.toFixed(2)}</span>
+            <span>{currencySymbol} {result.grossPay.toFixed(2)}</span>
           </div>
         </div>
 
@@ -87,7 +89,7 @@ export function Template1({
             {input.deductions?.map((item) => (
               <div key={item.id} className="flex justify-between">
                 <span>{item.name}</span>
-                <span>₹ {item.amount.toFixed(2)}</span>
+                <span>{currencySymbol} {item.amount.toFixed(2)}</span>
               </div>
             ))}
             {input.deductions.length === 0 && (
@@ -96,7 +98,7 @@ export function Template1({
           </div>
           <div className="flex justify-between font-bold mt-4 pt-2 border-t border-slate-200">
             <span>Total Deductions</span>
-            <span>₹ {result.totalDeductions.toFixed(2)}</span>
+            <span>{currencySymbol} {result.totalDeductions.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -107,7 +109,7 @@ export function Template1({
           <p className="text-xs text-slate-400 mt-1">(Gross Earnings - Total Deductions)</p>
         </div>
         <div className="text-3xl font-bold text-blue-600">
-          ₹ {result.netPay.toFixed(2)}
+          {currencySymbol} {result.netPay.toFixed(2)}
         </div>
       </div>
       

@@ -10,6 +10,7 @@ import { calculateInvoice, InvoiceInput } from '@paydocs/shared';
 import { Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GuestSaveNotice } from '@/components/GuestSaveNotice';
+import { CurrencySelect } from '@/components/CurrencySelect';
 import Papa from 'papaparse';
 import { z } from 'zod';
 
@@ -39,6 +40,7 @@ export default function BulkInvoiceGenerator() {
   const [companyName, setCompanyName] = useState('Acme Corp');
   const [issueDate, setIssueDate] = useState('2026-07-01');
   const [dueDate, setDueDate] = useState('2026-07-15');
+  const [currencySymbol, setCurrencySymbol] = useState('₹');
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<any[]>([]);
@@ -131,6 +133,7 @@ export default function BulkInvoiceGenerator() {
             invoiceNumber={row.InvoiceNumber || 'N/A'}
             issueDate={issueDate}
             dueDate={dueDate}
+            currencySymbol={currencySymbol}
           />
         );
         
@@ -201,16 +204,25 @@ export default function BulkInvoiceGenerator() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <GuestSaveNotice documentType="batch of invoices" />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bulk Invoice Generator</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">Generate hundreds of invoices in seconds via CSV upload.</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bulk Invoice Generator</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Generate hundreds of invoices in seconds via CSV upload.</p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="grid gap-8">
         <Card>
-          <CardHeader>
-            <CardTitle>Global Settings</CardTitle>
-            <CardDescription>These details apply to all generated invoices.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div>
+              <CardTitle>Global Settings</CardTitle>
+              <CardDescription>These details apply to all generated invoices.</CardDescription>
+            </div>
+            <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
           </CardHeader>
           <CardContent className="grid sm:grid-cols-3 gap-6">
             <div className="space-y-2">

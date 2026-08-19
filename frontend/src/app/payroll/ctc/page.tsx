@@ -8,14 +8,17 @@ import { Button } from '@/components/ui/button';
 import { Calculator, ArrowRight, PieChart } from 'lucide-react';
 import { calculateCTC, CtcResult } from '@paydocs/shared';
 
+import { CurrencySelect } from '@/components/CurrencySelect';
+
 export default function CtcCalculator() {
   const [annualCtc, setAnnualCtc] = useState<number>(1200000);
   const [isMetro, setIsMetro] = useState<boolean>(true);
+  const [currencySymbol, setCurrencySymbol] = useState<string>('₹');
   
   const result: CtcResult = calculateCTC({ annualCtc, isMetro });
   
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
+    return currencySymbol + ' ' + Math.round(val).toLocaleString();
   };
 
   const chartData = [
@@ -31,28 +34,37 @@ export default function CtcCalculator() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-          <PieChart className="w-8 h-8 mr-3 text-indigo-600" /> CTC to In-Hand Calculator
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Calculate your estimated monthly take-home salary based on your annual Cost to Company (CTC).
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
+            <PieChart className="w-8 h-8 mr-3 text-indigo-600" /> CTC to In-Hand Calculator
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Calculate your estimated monthly take-home salary based on your annual Cost to Company (CTC).
+          </p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
         {/* Left Column: Input Form */}
         <div className="lg:col-span-5 space-y-6">
           <Card className="shadow-lg border-indigo-100 dark:border-indigo-900/30">
-            <CardHeader className="bg-indigo-50/50 dark:bg-indigo-900/10 border-b">
-              <CardTitle>Salary Details</CardTitle>
-              <CardDescription>Enter your annual CTC to get started.</CardDescription>
+            <CardHeader className="bg-indigo-50/50 dark:bg-indigo-900/10 border-b flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle>Salary Details</CardTitle>
+                <CardDescription>Enter your annual CTC to get started.</CardDescription>
+              </div>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div className="space-y-2">
-                <Label className="text-base font-semibold">Annual CTC (₹)</Label>
+                <Label className="text-base font-semibold">Annual CTC ({currencySymbol})</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input 
                     type="number" 
                     className="pl-8 text-lg font-medium"

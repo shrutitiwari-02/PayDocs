@@ -8,7 +8,8 @@ export function QuotationTemplate2({
   clientName,
   QUOTATIONNumber,
   issueDate,
-  dueDate
+  dueDate,
+  currencySymbol = '₹'
 }: QuotationTemplate1Props) {
   return (
     <div className="bg-slate-900 p-8 max-w-4xl mx-auto font-sans text-slate-100 shadow-2xl rounded-xl border border-slate-800" style={{ width: '800px' }}>
@@ -16,7 +17,7 @@ export function QuotationTemplate2({
         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"></div>
         <div className="relative z-10">
           <div className="w-12 h-12 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-lg mb-4 flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-xl">{companyName.charAt(0)}</span>
+            <span className="text-white font-bold text-xl">{companyName ? companyName.charAt(0) : 'C'}</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">{companyName || 'Company Name'}</h1>
         </div>
@@ -60,8 +61,8 @@ export function QuotationTemplate2({
               <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
                 <td className="py-4 px-5 text-slate-200">{item.description}</td>
                 <td className="py-4 px-5 text-center text-slate-300">{item.quantity}</td>
-                <td className="py-4 px-5 text-right text-slate-300">₹ {item.rate.toFixed(2)}</td>
-                <td className="py-4 px-5 text-right font-medium text-white">₹ {(item.quantity * item.rate).toFixed(2)}</td>
+                <td className="py-4 px-5 text-right text-slate-300">{currencySymbol} {item.rate.toFixed(2)}</td>
+                <td className="py-4 px-5 text-right font-medium text-white">{currencySymbol} {(item.quantity * item.rate).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -72,21 +73,21 @@ export function QuotationTemplate2({
         <div className="w-72 bg-slate-800/40 rounded-lg border border-slate-700/50 p-5 space-y-3">
           <div className="flex justify-between text-slate-300 text-sm">
             <span>Subtotal</span>
-            <span>₹ {result.subtotal.toFixed(2)}</span>
+            <span>{currencySymbol} {result.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-slate-300 text-sm">
             <span>Tax ({input.taxPercentage}%)</span>
-            <span>₹ {result.taxAmount.toFixed(2)}</span>
+            <span>{currencySymbol} {result.taxAmount.toFixed(2)}</span>
           </div>
           {(input.discountAmount ?? 0) > 0 && (
             <div className="flex justify-between text-emerald-400 text-sm">
               <span>Discount</span>
-              <span>- ₹ {(input.discountAmount ?? 0).toFixed(2)}</span>
+              <span>- {currencySymbol} {(input.discountAmount ?? 0).toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between font-bold text-2xl pt-4 mt-2 border-t border-slate-700 text-white">
             <span>Total</span>
-            <span className="text-indigo-400">₹ {result.grandTotal.toFixed(2)}</span>
+            <span className="text-indigo-400">{currencySymbol} {result.grandTotal.toFixed(2)}</span>
           </div>
         </div>
       </div>

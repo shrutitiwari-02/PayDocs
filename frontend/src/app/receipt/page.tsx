@@ -12,6 +12,7 @@ import { Download, FileText, Loader2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
 import { GuestSaveNotice } from '@/components/GuestSaveNotice';
+import { CurrencySelect } from '@/components/CurrencySelect';
 
 export default function ReceiptGenerator() {
   const { data: session } = useSession();
@@ -22,6 +23,7 @@ export default function ReceiptGenerator() {
   const [date, setDate] = useState('2026-08-01');
   const [receivedFrom, setReceivedFrom] = useState('John Doe');
   const [amount, setAmount] = useState<number>(5000);
+  const [currencySymbol, setCurrencySymbol] = useState('₹');
   const [paymentMode, setPaymentMode] = useState('Bank Transfer');
   const [description, setDescription] = useState('Consulting Services');
   const [clientEmail, setClientEmail] = useState('');
@@ -35,7 +37,8 @@ export default function ReceiptGenerator() {
     amount,
     paymentMode,
     description,
-    companyName
+    companyName,
+    currencySymbol
   };
 
   const handleDownload = async () => {
@@ -155,7 +158,8 @@ export default function ReceiptGenerator() {
           </h1>
           <p className="text-slate-500 mt-2 text-lg">Generate professional payment receipts instantly.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
           <Button 
             onClick={handleDownload} 
             disabled={isGenerating}
@@ -180,18 +184,19 @@ export default function ReceiptGenerator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 space-y-6">
-          <Card className="border-0 shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden backdrop-blur-xl bg-white/80">
-            <CardHeader className="border-b border-slate-100 bg-slate-50/50">
-              <CardTitle className="text-lg text-slate-800">Receipt Details</CardTitle>
+          <Card className="shadow-lg border-slate-200">
+            <CardHeader className="bg-slate-50 border-b border-slate-100 flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-xl font-bold text-slate-800">Receipt Details</CardTitle>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
             </CardHeader>
-            <CardContent className="p-6 space-y-5">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">
-                <Label className="text-slate-600 font-medium">Your Company Name</Label>
+                <Label className="text-slate-600 font-medium">Company Name</Label>
                 <Input value={companyName} onChange={e => setCompanyName(e.target.value)} className="bg-slate-50/50" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-slate-600 font-medium">Receipt No.</Label>
+                  <Label className="text-slate-600 font-medium">Receipt #</Label>
                   <Input value={receiptNumber} onChange={e => setReceiptNumber(e.target.value)} className="bg-slate-50/50" />
                 </div>
                 <div className="space-y-2">
@@ -208,7 +213,7 @@ export default function ReceiptGenerator() {
                 <Input type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} className="bg-slate-50/50" placeholder="client@example.com" />
               </div>
               <div className="space-y-2">
-                <Label className="text-slate-600 font-medium">Amount Received (₹)</Label>
+                <Label className="text-slate-600 font-medium">Amount Received ({currencySymbol})</Label>
                 <Input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} className="bg-slate-50/50" />
               </div>
               <div className="space-y-2">

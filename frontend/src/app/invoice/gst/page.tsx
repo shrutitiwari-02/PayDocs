@@ -8,37 +8,47 @@ import { Button } from '@/components/ui/button';
 import { calculateGST, GstInput, GstResult } from '@paydocs/shared';
 import { Calculator, ArrowRight, Percent } from 'lucide-react';
 
+import { CurrencySelect } from '@/components/CurrencySelect';
+
 export default function GstCalculator() {
   const [amount, setAmount] = useState<number>(1000);
   const [rate, setRate] = useState<number>(18);
   const [mode, setMode] = useState<'exclusive' | 'inclusive'>('exclusive');
+  const [currencySymbol, setCurrencySymbol] = useState<string>('₹');
 
   const input: GstInput = { amount: amount || 0, rate, mode };
   const result: GstResult = calculateGST(input);
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(val);
+    return currencySymbol + ' ' + val.toFixed(2);
   };
 
   const gstRates = [5, 12, 18, 28];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-          <Percent className="w-8 h-8 mr-3 text-teal-600" /> GST Calculator
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Calculate GST Inclusive or Exclusive amounts instantly.
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
+            <Percent className="w-8 h-8 mr-3 text-teal-600" /> GST Calculator
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Calculate GST Inclusive or Exclusive amounts instantly.
+          </p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Left Column: Form */}
         <div className="space-y-6">
           <Card className="shadow-lg border-teal-100 dark:border-teal-900/30">
-            <CardHeader className="bg-teal-50/50 dark:bg-teal-900/10 border-b">
+            <CardHeader className="bg-teal-50/50 dark:bg-teal-900/10 border-b flex flex-row items-center justify-between space-y-0">
               <CardTitle>Calculation Details</CardTitle>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               

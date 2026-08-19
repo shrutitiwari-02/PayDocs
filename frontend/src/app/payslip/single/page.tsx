@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
 import { GuestSaveNotice, SaveStatusBadge } from '@/components/GuestSaveNotice';
 import { VisualTemplateSelector, TemplateId } from '@/components/VisualTemplateSelector';
+import { CurrencySelect } from '@/components/CurrencySelect';
 
 export default function SinglePayslipGenerator() {
   const { data: session } = useSession();
@@ -25,6 +26,7 @@ export default function SinglePayslipGenerator() {
   const [designation, setDesignation] = useState('Software Engineer');
   const [department, setDepartment] = useState('Engineering');
   const [payPeriod, setPayPeriod] = useState('July 2026');
+  const [currencySymbol, setCurrencySymbol] = useState('₹');
   const [selectedTemplate, setSelectedTemplate] = useState<'1' | '2' | '3'>('1');
 
   const [input, setInput] = useState<PayslipInput>({
@@ -87,7 +89,8 @@ export default function SinglePayslipGenerator() {
         employeeId,
         designation,
         department,
-        payPeriod
+        payPeriod,
+        currencySymbol
       };
       
       const element = selectedTemplate === '1' ? <Template1 {...commonProps} /> :
@@ -163,7 +166,8 @@ export default function SinglePayslipGenerator() {
         employeeId,
         designation,
         department,
-        payPeriod
+        payPeriod,
+        currencySymbol
       };
       
       const element = selectedTemplate === '1' ? <Template1 {...commonProps} /> :
@@ -214,16 +218,25 @@ export default function SinglePayslipGenerator() {
     <div className="container mx-auto px-4 py-8">
       <GuestSaveNotice documentType="payslip" />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Single Payslip Generator</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">Generate a professional payslip instantly. Your changes preview live on the right.</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Single Payslip Generator</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Generate a professional payslip instantly. Your changes preview live on the right.</p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Column: Form */}
         <div className="w-full lg:w-[45%] space-y-6">
           <Card>
-            <CardHeader><CardTitle>Company & Employee Details</CardTitle></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Company & Employee Details</CardTitle>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Company Name</Label>
@@ -261,22 +274,27 @@ export default function SinglePayslipGenerator() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Earnings</CardTitle></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Earnings ({currencySymbol})</CardTitle>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                Active: {currencySymbol}
+              </span>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Basic Salary (₹)</Label>
+                  <Label>Basic Salary ({currencySymbol})</Label>
                   <Input type="number" min="0" value={input.basic || ''} onChange={e => setInput({...input, basic: parseFloat(e.target.value) || 0})} />
                 </div>
                 <div className="space-y-2">
-                  <Label>HRA (₹)</Label>
+                  <Label>HRA ({currencySymbol})</Label>
                   <Input type="number" min="0" value={input.hra || ''} onChange={e => setInput({...input, hra: parseFloat(e.target.value) || 0})} />
                 </div>
               </div>
               
               <div className="pt-4 border-t">
                 <div className="flex justify-between items-center mb-4">
-                  <Label>Additional Allowances</Label>
+                  <Label>Additional Allowances ({currencySymbol})</Label>
                   <Button variant="outline" size="sm" onClick={handleAddAllowance}><Plus className="w-4 h-4 mr-2"/> Add</Button>
                 </div>
                 {input.allowances?.map((item) => (
@@ -291,10 +309,15 @@ export default function SinglePayslipGenerator() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Deductions</CardTitle></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Deductions ({currencySymbol})</CardTitle>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400">
+                Active: {currencySymbol}
+              </span>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center mb-4">
-                <Label>Deductions (PF, Tax, etc.)</Label>
+                <Label>Deductions (PF, Tax, etc.) ({currencySymbol})</Label>
                 <Button variant="outline" size="sm" onClick={handleAddDeduction}><Plus className="w-4 h-4 mr-2"/> Add</Button>
               </div>
               {input.deductions?.map((item) => (
@@ -333,9 +356,9 @@ export default function SinglePayslipGenerator() {
             
             <div className="bg-slate-100 dark:bg-slate-900 border rounded-xl overflow-hidden p-4 sm:p-8 flex justify-center lg:justify-start items-start shadow-inner overflow-x-auto">
               <div className="w-[800px] origin-top md:origin-top-left scale-[0.45] xs:scale-[0.55] sm:scale-[0.65] md:scale-75 xl:scale-90 2xl:scale-100 transition-transform shadow-xl">
-                {selectedTemplate === '1' && <Template1 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} />}
-                {selectedTemplate === '2' && <Template2 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} />}
-                {selectedTemplate === '3' && <Template3 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} />}
+                {selectedTemplate === '1' && <Template1 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} currencySymbol={currencySymbol} />}
+                {selectedTemplate === '2' && <Template2 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} currencySymbol={currencySymbol} />}
+                {selectedTemplate === '3' && <Template3 input={input} result={result} companyName={companyName} employeeName={employeeName} employeeId={employeeId} designation={designation} department={department} payPeriod={payPeriod} currencySymbol={currencySymbol} />}
               </div>
             </div>
           </div>

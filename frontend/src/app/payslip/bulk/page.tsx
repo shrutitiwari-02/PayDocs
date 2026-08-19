@@ -10,6 +10,7 @@ import { calculatePayslip, PayslipInput } from '@paydocs/shared';
 import { Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GuestSaveNotice } from '@/components/GuestSaveNotice';
+import { CurrencySelect } from '@/components/CurrencySelect';
 import Papa from 'papaparse';
 import { z } from 'zod';
 
@@ -39,6 +40,7 @@ export default function BulkPayslipGenerator() {
   
   const [companyName, setCompanyName] = useState('Acme Corp');
   const [payPeriod, setPayPeriod] = useState('July 2026');
+  const [currencySymbol, setCurrencySymbol] = useState('₹');
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<any[]>([]);
@@ -60,71 +62,62 @@ export default function BulkPayslipGenerator() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
-    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      toast({ title: 'Invalid File', description: 'Please upload a valid CSV file.', type: 'error' });
-      return;
-    }
 
-    setValidationErrors([]);
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const data = results.data;
         const errors: string[] = [];
-        
-        data.forEach((row, index) => {
-          const parsed = payslipRowSchema.safeParse(row);
-          if (!parsed.success) {
-            const rowErrors = parsed.error.issues.map(issue => issue.message).join(', ');
-            errors.push(`Row ${index + 2}: ${rowErrors}`);
+        const validRows: any[] = [];
+
+        results.data.forEach((row: any, index: number) => {
+          const parseResult = payslipRowSchema.safeParse(row);
+          if (!parseResult.success) {
+            parseResult.error.issues.forEach(err => {
+              errors.push(`Row ${index + 1}: ${err.message}`);
+            });
+          } else {
+            validRows.push(row);
           }
         });
 
-        if (errors.length > 0) {
-          setValidationErrors(errors);
-          setParsedData([]);
-          toast({ title: 'Validation Failed', description: `Found ${errors.length} row errors. Please fix them.`, type: 'error' });
+        setValidationErrors(errors);
+        setParsedData(validRows);
+        
+        if (errors.length === 0) {
+          toast({ title: 'CSV Parsed', description: `${validRows.length} valid employee records found.` });
         } else {
-          setParsedData(data);
-          toast({ title: 'CSV Validated', description: `Successfully loaded and validated ${data.length} records.` });
+          toast({ title: 'Validation Warning', description: `Found ${errors.length} validation issues.`, type: 'error' });
         }
-      },
-      error: (error) => {
-        toast({ title: 'Parse Error', description: error.message, type: 'error' });
       }
     });
   };
 
-  const generateBulk = async () => {
-    if (parsedData.length === 0) {
-      toast({ title: 'No Data', description: 'Please upload a valid CSV file first.', type: 'error' });
-      return;
-    }
-
+  const handleGenerateBulk = async () => {
+    if (parsedData.length === 0) return;
+    
     setIsProcessing(true);
-    setJobStatus(null);
+    toast({ title: 'Starting Batch Job...', description: 'Rendering payslips in the background queue.' });
     
     try {
       const ReactDOMServer = (await import('react-dom/server')).default;
       
       const items = parsedData.map(row => {
         const input: PayslipInput = {
-          basic: parseFloat(row.BasicSalary) || 0,
-          hra: parseFloat(row.HRA) || 0,
+          basic: Number(row.BasicSalary) || 0,
+          hra: Number(row.HRA) || 0,
           allowances: [
-            { id: '1', name: 'Transport', amount: parseFloat(row.TransportAllowance) || 0 },
-            { id: '2', name: 'Medical', amount: parseFloat(row.MedicalAllowance) || 0 }
-          ].filter(a => a.amount > 0),
+            ...(Number(row.TransportAllowance) ? [{ id: '1', name: 'Transport', amount: Number(row.TransportAllowance) }] : []),
+            ...(Number(row.MedicalAllowance) ? [{ id: '2', name: 'Medical', amount: Number(row.MedicalAllowance) }] : []),
+          ],
           deductions: [
-            { id: '1', name: 'PF', amount: parseFloat(row.PF) || 0 },
-            { id: '2', name: 'TDS', amount: parseFloat(row.TDS) || 0 }
-          ].filter(d => d.amount > 0)
+            ...(Number(row.PF) ? [{ id: '1', name: 'PF', amount: Number(row.PF) }] : []),
+            ...(Number(row.TDS) ? [{ id: '2', name: 'TDS', amount: Number(row.TDS) }] : []),
+          ]
         };
-        
+
         const result = calculatePayslip(input);
-        
+
         const element = (
           <Template1 
             input={input} 
@@ -135,6 +128,7 @@ export default function BulkPayslipGenerator() {
             designation={row.Designation || 'N/A'}
             department={row.Department || 'N/A'}
             payPeriod={payPeriod}
+            currencySymbol={currencySymbol}
           />
         );
         
@@ -204,16 +198,25 @@ export default function BulkPayslipGenerator() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <GuestSaveNotice documentType="batch of payslips" />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bulk Payslip Generator</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">Generate hundreds of payslips in seconds via CSV upload.</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bulk Payslip Generator</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Generate hundreds of payslips in seconds via CSV upload.</p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="grid gap-8">
         <Card>
-          <CardHeader>
-            <CardTitle>Global Settings</CardTitle>
-            <CardDescription>These details apply to all generated payslips.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <div>
+              <CardTitle>Global Settings</CardTitle>
+              <CardDescription>These details apply to all generated payslips.</CardDescription>
+            </div>
+            <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
           </CardHeader>
           <CardContent className="grid sm:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -264,7 +267,7 @@ export default function BulkPayslipGenerator() {
             {parsedData.length > 0 && (
               <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-lg flex items-center justify-between">
                 <span className="font-medium">✅ {parsedData.length} records loaded successfully</span>
-                <Button onClick={generateBulk} disabled={isProcessing} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={handleGenerateBulk} disabled={isProcessing} className="bg-blue-600 hover:bg-blue-700 text-white">
                   {isProcessing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : 'Generate Bulk PDFs'}
                 </Button>
               </div>

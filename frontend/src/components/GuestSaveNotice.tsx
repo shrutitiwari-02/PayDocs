@@ -13,8 +13,12 @@ import { Button } from "@/components/ui/button";
 export function GuestSaveNotice({ documentType = "document" }: { documentType?: string }) {
   const { data: session, status } = useSession();
 
-  // If loading or already signed in, do not render the guest warning
-  if (status === "loading" || session?.user) {
+  if (status === "loading") {
+    return null;
+  }
+
+  // If already signed in, render success status banner
+  if (session?.user) {
     return (
       <div className="mb-6 p-3 px-4 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/60 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300 transition-all">
         <div className="flex items-center gap-2">

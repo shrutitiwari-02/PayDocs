@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSession, signIn } from 'next-auth/react';
+import { CurrencySelect } from '@/components/CurrencySelect';
 
 interface HistoryRecord {
   id: string;
@@ -34,6 +35,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'ALL' | 'PAYSLIP' | 'INVOICE'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [currencySymbol, setCurrencySymbol] = useState<string>('$');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -115,11 +117,7 @@ export default function Dashboard() {
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 2,
-    }).format(val);
+    return currencySymbol + ' ' + Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   if (status === 'loading' || status === 'unauthenticated') {
@@ -152,6 +150,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-2.5">
+            <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} className="mr-2" />
             <Link href="/payslip/single">
               <Button size="sm" className="font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs">
                 <Plus className="w-4 h-4 mr-1.5" />

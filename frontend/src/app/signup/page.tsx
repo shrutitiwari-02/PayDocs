@@ -236,7 +236,8 @@ export default function SignupPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        .auth-root { font-family: 'Inter', sans-serif; }
+        html, body { overflow: hidden !important; height: 100vh !important; margin: 0; padding: 0; }
+        .auth-root { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         .auth-input:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,.12) !important; }
         .auth-btn { background: linear-gradient(135deg, #3b82f6, #6366f1); transition: all .2s; }
         .auth-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,.35); }
@@ -244,23 +245,23 @@ export default function SignupPage() {
         .auth-btn:disabled { opacity: .6; cursor: not-allowed; }
         .spin { animation: spin .7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .tools-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; color: #475569; font-size: 13px; text-decoration: none; transition: color .15s; }
+        .tools-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; color: #475569; font-size: 12.5px; text-decoration: none; transition: color .15s; }
         .tools-item:hover { color: #6366f1; }
         .right-panel { background: linear-gradient(160deg, #f1f5f9 0%, #e8edf5 100%); }
         @media (max-width: 1023px) { .right-panel { display: none !important; } .form-col { width: 100% !important; } }
       `}</style>
 
-      <div className="auth-root" style={{ display: 'flex', minHeight: '100vh', background: '#fff' }}>
+      <div className="auth-root" style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#fff' }}>
 
         {/* ── LEFT: FORM ─────────────────────────────────────────────────────── */}
-        <div className="form-col" style={{ width: '55%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 40px', minHeight: '100vh' }}>
-          <div style={{ width: '100%', maxWidth: 400 }}>
+        <div className="form-col" style={{ width: '55%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 32px', height: '100vh', boxSizing: 'border-box' }}>
+          <div style={{ width: '100%', maxWidth: 380 }}>
 
             {/* Logo */}
-            <div style={{ marginBottom: 32 }}>
-              <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-                <img src="/logo-transparent.png" alt="PayDocs Logo" style={{ height: 48, width: 'auto', objectFit: 'contain' }} />
-                <span style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>PayDocs</span>
+            <div style={{ marginBottom: 20 }}>
+              <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+                <img src="/logo-transparent.png" alt="PayDocs Logo" style={{ height: 42, width: 'auto', objectFit: 'contain' }} />
+                <span style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.5px' }}>PayDocs</span>
               </Link>
             </div>
 
@@ -459,46 +460,46 @@ export default function SignupPage() {
         </div>
 
         {/* ── RIGHT: INFO PANEL ──────────────────────────────────────────────── */}
-        <div className="right-panel" style={{ width: '45%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 48px', position: 'relative', overflow: 'hidden' }}>
+        <div className="right-panel" style={{ width: '45%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 36px', height: '100vh', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: -80, right: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(99,102,241,.06)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -60, left: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(59,130,246,.05)', pointerEvents: 'none' }} />
 
-          <div style={{ width: '100%', maxWidth: 360, position: 'relative', zIndex: 1 }}>
-            <div style={{ borderRadius: 20, overflow: 'hidden', marginBottom: 36, boxShadow: '0 20px 60px rgba(15,23,42,.1)' }}>
-              <Image src="/auth-illustration.jpg" alt="PayDocs product illustration" width={360} height={260} style={{ width: '100%', height: 'auto', display: 'block' }} priority />
+          <div style={{ width: '100%', maxWidth: 340, position: 'relative', zIndex: 1 }}>
+            <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 24, boxShadow: '0 16px 40px rgba(15,23,42,.08)' }}>
+              <Image src="/auth-illustration.jpg" alt="PayDocs product illustration" width={340} height={200} style={{ width: '100%', height: 'auto', display: 'block' }} priority />
             </div>
 
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '0 0 12px', letterSpacing: '-0.4px', lineHeight: 1.3 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0f172a', margin: '0 0 8px', letterSpacing: '-0.4px', lineHeight: 1.3 }}>
               Manage payroll and documents in one place
             </h2>
-            <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7, margin: '0 0 28px' }}>
+            <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, margin: '0 0 20px' }}>
               Generate payslips, create invoices, calculate GST and CTC, and manage all your business documents — all from a single, secure workspace.
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
               {['Professional PDF payslips & invoices', 'GST, CTC & salary calculations', 'PDF utilities: merge, watermark, sign'].map(f => (
-                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <CheckIcon />
                   </div>
-                  <span style={{ fontSize: 13, color: '#475569', fontWeight: 500 }}>{f}</span>
+                  <span style={{ fontSize: 12.5, color: '#475569', fontWeight: 500 }}>{f}</span>
                 </div>
               ))}
             </div>
 
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
               <button
                 onClick={() => setToolsOpen(v => !v)}
                 type="button"
-                style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: '#6366f1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                style={{ background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', fontSize: 12.5, fontWeight: 600, color: '#6366f1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
               >
                 {toolsOpen ? '▾' : '▸'} See all tools
               </button>
               {toolsOpen && (
-                <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column' }}>
                   {tools.map(t => (
                     <a key={t.label} href={t.href} className="tools-item">
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c7d2fe', flexShrink: 0 }} />
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#c7d2fe', flexShrink: 0 }} />
                       {t.label}
                     </a>
                   ))}

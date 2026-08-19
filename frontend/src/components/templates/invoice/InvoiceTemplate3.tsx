@@ -8,7 +8,8 @@ export function InvoiceTemplate3({
   clientName,
   invoiceNumber,
   issueDate,
-  dueDate
+  dueDate,
+  currencySymbol = '₹'
 }: InvoiceTemplate1Props) {
   return (
     <div className="bg-white p-12 max-w-4xl mx-auto font-mono text-black border border-black" style={{ width: '800px' }}>
@@ -50,8 +51,8 @@ export function InvoiceTemplate3({
               <tr key={item.id}>
                 <td className="py-4 border-b border-gray-300">{item.description}</td>
                 <td className="py-4 border-b border-gray-300 text-center">{item.quantity}</td>
-                <td className="py-4 border-b border-gray-300 text-right">{item.rate.toFixed(2)}</td>
-                <td className="py-4 border-b border-gray-300 text-right font-bold">{(item.quantity * item.rate).toFixed(2)}</td>
+                <td className="py-4 border-b border-gray-300 text-right">{currencySymbol} {item.rate.toFixed(2)}</td>
+                <td className="py-4 border-b border-gray-300 text-right font-bold">{currencySymbol} {(item.quantity * item.rate).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
@@ -63,21 +64,21 @@ export function InvoiceTemplate3({
           <tbody>
             <tr>
               <td className="py-2 font-bold uppercase">Subtotal</td>
-              <td className="py-2 text-right">{result.subtotal.toFixed(2)}</td>
+              <td className="py-2 text-right">{currencySymbol} {result.subtotal.toFixed(2)}</td>
             </tr>
             <tr>
               <td className="py-2 font-bold uppercase">Tax ({input.taxPercentage}%)</td>
-              <td className="py-2 text-right">{result.taxAmount.toFixed(2)}</td>
+              <td className="py-2 text-right">{currencySymbol} {result.taxAmount.toFixed(2)}</td>
             </tr>
             {(input.discountAmount ?? 0) > 0 && (
               <tr>
                 <td className="py-2 font-bold uppercase">Discount</td>
-                <td className="py-2 text-right">- {(input.discountAmount ?? 0).toFixed(2)}</td>
+                <td className="py-2 text-right">- {currencySymbol} {(input.discountAmount ?? 0).toFixed(2)}</td>
               </tr>
             )}
             <tr>
               <td className="py-4 mt-2 border-t-2 border-black font-bold uppercase text-xl">Total Amount</td>
-              <td className="py-4 mt-2 border-t-2 border-black font-bold text-right text-2xl">{result.grandTotal.toFixed(2)} INR</td>
+              <td className="py-4 mt-2 border-t-2 border-black font-bold text-right text-2xl">{currencySymbol} {result.grandTotal.toFixed(2)}</td>
             </tr>
           </tbody>
         </table>

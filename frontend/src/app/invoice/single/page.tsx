@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
 import { GuestSaveNotice, SaveStatusBadge } from '@/components/GuestSaveNotice';
 import { VisualTemplateSelector, TemplateId } from '@/components/VisualTemplateSelector';
+import { CurrencySelect } from '@/components/CurrencySelect';
 
 export default function SingleInvoiceGenerator() {
   const { data: session } = useSession();
@@ -25,6 +26,7 @@ export default function SingleInvoiceGenerator() {
   const [invoiceNumber, setInvoiceNumber] = useState('INV-0001');
   const [issueDate, setIssueDate] = useState('2026-07-01');
   const [dueDate, setDueDate] = useState('2026-07-15');
+  const [currencySymbol, setCurrencySymbol] = useState('₹');
   const [selectedTemplate, setSelectedTemplate] = useState<'1' | '2' | '3'>('1');
   const [isEmailing, setIsEmailing] = useState(false);
 
@@ -70,7 +72,8 @@ export default function SingleInvoiceGenerator() {
         clientName,
         invoiceNumber,
         issueDate,
-        dueDate
+        dueDate,
+        currencySymbol
       };
       
       const element = selectedTemplate === '1' ? <InvoiceTemplate1 {...commonProps} /> :
@@ -185,16 +188,25 @@ export default function SingleInvoiceGenerator() {
     <div className="container mx-auto px-4 py-8">
       <GuestSaveNotice documentType="invoice" />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Single Invoice Generator</h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">Generate a professional invoice instantly with automatic tax calculations.</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Single Invoice Generator</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Generate a professional invoice instantly with automatic tax calculations.</p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Column: Form */}
         <div className="w-full lg:w-[45%] space-y-6">
           <Card>
-            <CardHeader><CardTitle>Invoice Details</CardTitle></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Invoice Details</CardTitle>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
+            </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Your Company Name</Label>
@@ -228,7 +240,12 @@ export default function SingleInvoiceGenerator() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Line Items</CardTitle></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Line Items ({currencySymbol})</CardTitle>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                Active: {currencySymbol}
+              </span>
+            </CardHeader>
             <CardContent className="space-y-4">
               {input.items?.map((item) => (
                 <div key={item.id} className="flex gap-2 mb-3 items-center bg-slate-50 dark:bg-slate-800 p-2 rounded">
@@ -246,7 +263,7 @@ export default function SingleInvoiceGenerator() {
                   <Input type="number" min="0" value={input.taxPercentage || ''} onChange={e => setInput({...input, taxPercentage: parseFloat(e.target.value) || 0})} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Discount Amount (₹)</Label>
+                  <Label>Discount Amount ({currencySymbol})</Label>
                   <Input type="number" min="0" value={input.discountAmount || ''} onChange={e => setInput({...input, discountAmount: parseFloat(e.target.value) || 0})} />
                 </div>
               </div>
@@ -280,9 +297,9 @@ export default function SingleInvoiceGenerator() {
             
             <div className="bg-slate-100 dark:bg-slate-900 border rounded-xl overflow-hidden p-4 sm:p-8 flex justify-center lg:justify-start items-start shadow-inner overflow-x-auto">
               <div className="w-[800px] origin-top md:origin-top-left scale-[0.45] xs:scale-[0.55] sm:scale-[0.65] md:scale-75 xl:scale-90 2xl:scale-100 transition-transform shadow-xl">
-                {selectedTemplate === '1' && <InvoiceTemplate1 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} />}
-                {selectedTemplate === '2' && <InvoiceTemplate2 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} />}
-                {selectedTemplate === '3' && <InvoiceTemplate3 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} />}
+                {selectedTemplate === '1' && <InvoiceTemplate1 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} currencySymbol={currencySymbol} />}
+                {selectedTemplate === '2' && <InvoiceTemplate2 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} currencySymbol={currencySymbol} />}
+                {selectedTemplate === '3' && <InvoiceTemplate3 input={input} result={result} companyName={companyName} clientName={clientName} invoiceNumber={invoiceNumber} issueDate={issueDate} dueDate={dueDate} currencySymbol={currencySymbol} />}
               </div>
             </div>
           </div>

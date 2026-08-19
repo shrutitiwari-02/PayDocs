@@ -7,7 +7,10 @@ import { Label } from '@/components/ui/label';
 import { calculateSalaryBreakup, SalaryBreakupInput, SalaryBreakupResult } from '@paydocs/shared';
 import { Calculator } from 'lucide-react';
 
+import { CurrencySelect } from '@/components/CurrencySelect';
+
 export default function SalaryBreakupCalculator() {
+  const [currencySymbol, setCurrencySymbol] = useState<string>('₹');
   const [input, setInput] = useState<SalaryBreakupInput>({
     basicMonthly: 50000,
     hraMonthly: 25000,
@@ -20,7 +23,7 @@ export default function SalaryBreakupCalculator() {
   const result: SalaryBreakupResult = calculateSalaryBreakup(input);
   
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
+    return currencySymbol + ' ' + Math.round(val).toLocaleString();
   };
 
   const handleChange = (field: keyof SalaryBreakupInput, value: number) => {
@@ -29,41 +32,48 @@ export default function SalaryBreakupCalculator() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-          <Calculator className="w-8 h-8 mr-3 text-emerald-600" /> Salary Breakup Calculator
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 mt-2">
-          Input your monthly salary components and deductions to calculate your exact net pay.
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
+            <Calculator className="w-8 h-8 mr-3 text-emerald-600" /> Salary Breakup Calculator
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">
+            Input your monthly salary components and deductions to calculate your exact net pay.
+          </p>
+        </div>
+        <div className="shrink-0 bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">Select Currency:</span>
+          <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} label="" />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
         {/* Left Column: Form */}
         <div className="lg:col-span-5 space-y-6">
           <Card className="shadow-lg border-emerald-100 dark:border-emerald-900/30">
-            <CardHeader className="bg-emerald-50/50 dark:bg-emerald-900/10 border-b">
+            <CardHeader className="bg-emerald-50/50 dark:bg-emerald-900/10 border-b flex flex-row items-center justify-between space-y-0">
               <CardTitle>Earnings (Monthly)</CardTitle>
+              <CurrencySelect value={currencySymbol} onChange={setCurrencySymbol} />
             </CardHeader>
             <CardContent className="pt-6 space-y-4">
               <div className="space-y-2">
                 <Label>Basic Salary</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.basicMonthly || ''} onChange={e => handleChange('basicMonthly', Number(e.target.value))} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>House Rent Allowance (HRA)</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.hraMonthly || ''} onChange={e => handleChange('hraMonthly', Number(e.target.value))} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Special Allowance</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.specialAllowanceMonthly || ''} onChange={e => handleChange('specialAllowanceMonthly', Number(e.target.value))} />
                 </div>
               </div>
@@ -78,21 +88,21 @@ export default function SalaryBreakupCalculator() {
               <div className="space-y-2">
                 <Label>Employee PF</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.pfEmployeeMonthly || ''} onChange={e => handleChange('pfEmployeeMonthly', Number(e.target.value))} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Professional Tax</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.ptMonthly || ''} onChange={e => handleChange('ptMonthly', Number(e.target.value))} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Income Tax / TDS</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-slate-500">₹</span>
+                  <span className="absolute left-3 top-2.5 text-slate-500 font-semibold">{currencySymbol}</span>
                   <Input type="number" className="pl-8" value={input.taxMonthly || ''} onChange={e => handleChange('taxMonthly', Number(e.target.value))} />
                 </div>
               </div>

@@ -42,6 +42,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-do-not-use-in-prod';
 
 // Secure In-Memory OTP Store
+// email -> { otp: string, expiresAt: number, hashedPassword: string, attempts: number, lastSentAt: number }
 interface OtpEntry {
   otp: string;
   expiresAt: number;
@@ -51,7 +52,7 @@ interface OtpEntry {
 }
 const otpStore = new Map<string, OtpEntry>();
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./dev.db' });
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL as string });
 const prisma = new PrismaClient({ adapter });
 const app = express();
 
@@ -108,27 +109,7 @@ async function setupSecurePage(browser: any, html: string) {
   return page;
 }
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:3000',
-  'http://localhost:3001',
-].filter(Boolean) as string[];
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
-  },
-  credentials: true
-}));
-
-app.get('/', (req, res) => {
-  res.json({ status: 'ok', service: 'PayDocs Backend API' });
-});
-
+app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
 app.use(express.json({ limit: '5mb' }));
 
 const authMiddleware = (req: any, res: any, next: any) => {
@@ -224,7 +205,7 @@ app.post('/api/pdf/payslip', optionalAuthMiddleware, pdfLimiter, async (req, res
     console.error('PDF Generation Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
-    if (page) await page.close().catch(() => {});
+    if (page) await page.close().catch(() => { });
   }
 });
 
@@ -269,7 +250,7 @@ app.post('/api/pdf/email-payslip', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Payslip Error:', error);
     res.status(500).json({ error: 'Failed to email payslip' });
   } finally {
-    if (page) await page.close().catch(() => {});
+    if (page) await page.close().catch(() => { });
   }
 });
 
@@ -314,7 +295,7 @@ app.post('/api/pdf/email-invoice', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Invoice Error:', error);
     res.status(500).json({ error: 'Failed to email invoice' });
   } finally {
-    if (page) await page.close().catch(() => {});
+    if (page) await page.close().catch(() => { });
   }
 });
 
@@ -359,7 +340,7 @@ app.post('/api/pdf/email-quotation', optionalAuthMiddleware, pdfLimiter, async (
     console.error('Email Quotation Error:', error);
     res.status(500).json({ error: 'Failed to email quotation' });
   } finally {
-    if (page) await page.close().catch(() => {});
+    if (page) await page.close().catch(() => { });
   }
 });
 
@@ -404,7 +385,7 @@ app.post('/api/pdf/email-receipt', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Receipt Error:', error);
     res.status(500).json({ error: 'Failed to email receipt' });
   } finally {
-    if (page) await page.close().catch(() => {});
+    if (page) await page.close().catch(() => { });
   }
 });
 

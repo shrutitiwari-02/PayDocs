@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,7 +48,7 @@ export default function PDFSignTool() {
       formData.append('file', file);
       if (signatureBase64) formData.append('signature', signatureBase64);
 
-      const res = await fetch('http://localhost:3001/api/pdf/sign', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/sign`, {
         method: 'POST',
         body: formData
       });

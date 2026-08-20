@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,7 @@ export default function PDFSplitTool() {
       formData.append('startPage', startPage.toString());
       formData.append('endPage', endPage.toString());
 
-      const response = await fetch('http://localhost:3001/api/pdf/split', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/split`, {
         method: 'POST',
         body: formData,
       });

@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,7 +48,7 @@ export default function PDFCompressTool() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:3001/api/pdf/compress', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/compress`, {
         method: 'POST',
         body: formData,
       });

@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,7 +68,7 @@ export default function ReceiptGenerator() {
         </html>
       `;
 
-      const res = await fetch('http://localhost:3001/api/pdf/generate', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ html: fullHtml })
@@ -120,7 +120,7 @@ export default function ReceiptGenerator() {
       `;
 
       const token = (session?.user as any)?.token;
-      const response = await fetch('http://localhost:3001/api/pdf/email-receipt', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/email-receipt`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

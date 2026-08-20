@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -159,7 +159,7 @@ export default function BulkInvoiceGenerator() {
       });
 
       // Reuse the same bulk pdf route since it just takes HTML and zips it
-      const response = await fetch('http://localhost:3001/api/pdf/payslip/bulk', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/payslip/bulk`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items }),
@@ -180,7 +180,7 @@ export default function BulkInvoiceGenerator() {
   const pollJobStatus = async (jobId: string) => {
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/jobs/${jobId}`);
+        const response = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`);
         const status = await response.json();
         
         setJobStatus(status);
@@ -301,7 +301,7 @@ export default function BulkInvoiceGenerator() {
               <p className="text-sm text-slate-600 font-medium mb-4">{jobStatus.progress} of {jobStatus.total} processed</p>
 
               {jobStatus.status === 'completed' && jobStatus.resultUrl && (
-                <a href={`http://localhost:3001${jobStatus.resultUrl}`} download className="inline-flex w-full items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-green-600 text-white hover:bg-green-700">
+                <a href={`${API_BASE_URL}${jobStatus.resultUrl}`} download className="inline-flex w-full items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-green-600 text-white hover:bg-green-700">
                   <Download className="w-4 h-4 mr-2" /> Download ZIP Archive
                 </a>
               )}

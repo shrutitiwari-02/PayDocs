@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -114,7 +114,7 @@ export default function SinglePayslipGenerator() {
       `;
 
       const token = (session?.user as any)?.token;
-      const response = await fetch('http://localhost:3001/api/pdf/payslip', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/payslip`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ export default function SinglePayslipGenerator() {
       `;
 
       const token = (session?.user as any)?.token;
-      const response = await fetch('http://localhost:3001/api/pdf/email-payslip', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/email-payslip`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

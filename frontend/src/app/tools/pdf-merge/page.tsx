@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,7 +63,7 @@ export default function PDFMergeTool() {
         formData.append('files', file);
       });
 
-      const response = await fetch('http://localhost:3001/api/pdf/merge', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/merge`, {
         method: 'POST',
         body: formData,
       });

@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,7 +97,7 @@ export default function SingleInvoiceGenerator() {
 
       // We can reuse the payslip pdf generator route, or create a generic one. Let's reuse it since it just takes HTML.
       const token = (session?.user as any)?.token;
-      const response = await fetch('http://localhost:3001/api/pdf/payslip', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/payslip`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function SingleInvoiceGenerator() {
       `;
 
       const token = (session?.user as any)?.token;
-      const response = await fetch('http://localhost:3001/api/pdf/email-invoice', {
+      const response = await fetch(`${API_BASE_URL}/api/pdf/email-invoice`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

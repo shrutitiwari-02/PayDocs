@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export default function PDFRotateTool() {
       formData.append('file', file);
       formData.append('rotation', rotation);
 
-      const res = await fetch('http://localhost:3001/api/pdf/rotate', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/rotate`, {
         method: 'POST',
         body: formData
       });

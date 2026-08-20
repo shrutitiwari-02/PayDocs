@@ -1,4 +1,5 @@
-'use client';
+"use client";
+import { API_BASE_URL } from "@/config/api";
 import { useState, useRef, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -154,7 +155,7 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/auth/send-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -184,7 +185,7 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/auth/verify-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp }),
@@ -212,7 +213,7 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/auth/send-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

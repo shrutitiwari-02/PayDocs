@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export default function PDFPageNumbersTool() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch('http://localhost:3001/api/pdf/page-numbers', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/page-numbers`, {
         method: 'POST',
         body: formData
       });

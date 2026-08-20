@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,7 +57,7 @@ export default function ImageToPDFTool() {
       const formData = new FormData();
       files.forEach(file => formData.append('files', file));
 
-      const res = await fetch('http://localhost:3001/api/pdf/image-to-pdf', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/image-to-pdf`, {
         method: 'POST',
         body: formData
       });

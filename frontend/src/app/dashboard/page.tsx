@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { 
@@ -45,7 +45,7 @@ export default function Dashboard() {
 
     if (status === 'authenticated' && session?.user) {
       const token = (session.user as any).token;
-      fetch('http://localhost:3001/api/history', {
+      fetch(`${API_BASE_URL}/api/history`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       })
         .then(res => res.json())
@@ -70,7 +70,7 @@ export default function Dashboard() {
     setDeletingId(id);
     try {
       const token = (session?.user as any)?.token;
-      const res = await fetch(`http://localhost:3001/api/history/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/history/${id}`, {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });

@@ -1,5 +1,5 @@
 "use client";
-
+import { API_BASE_URL } from "@/config/api";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ export default function PDFWatermarkTool() {
       formData.append('file', file);
       formData.append('text', watermarkText);
 
-      const res = await fetch('http://localhost:3001/api/pdf/watermark', {
+      const res = await fetch(`${API_BASE_URL}/api/pdf/watermark`, {
         method: 'POST',
         body: formData
       });

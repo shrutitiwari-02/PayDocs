@@ -9,7 +9,7 @@ import pdfParse from 'pdf-parse';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import path from 'path';
 import fs from 'fs';
-import { calculatePayslip, calculateInvoice } from '@paydocs/shared';
+import { calculatePayslip, calculateInvoice } from './shared';
 import { createJob, getJob } from './queue';
 import { PrismaClient } from '@prisma/client';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';

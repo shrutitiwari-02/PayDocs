@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+// @ts-ignore
+import Database from 'better-sqlite3';
 import { sendPasswordResetEmail, sendPayslipEmail, sendInvoiceEmail, sendQuotationEmail, sendReceiptEmail, sendOtpEmail } from './services/email';
 import { validateAuthenticEmail } from './services/verification';
 import puppeteer from 'puppeteer';
@@ -42,7 +44,6 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-do-not-use-in-prod';
 
 // Secure In-Memory OTP Store
-// email -> { otp: string, expiresAt: number, hashedPassword: string, attempts: number, lastSentAt: number }
 interface OtpEntry {
   otp: string;
   expiresAt: number;
@@ -52,7 +53,9 @@ interface OtpEntry {
 }
 const otpStore = new Map<string, OtpEntry>();
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL as string });
+const dbPath = (process.env.DATABASE_URL || 'file:./dev.db').replace(/^file:/, '');
+const sqliteDb = new Database(dbPath);
+const adapter = new PrismaBetterSqlite3(sqliteDb);
 const prisma = new PrismaClient({ adapter });
 const app = express();
 
@@ -109,7 +112,27 @@ async function setupSecurePage(browser: any, html: string) {
   return page;
 }
 
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
+  credentials: true
+}));
+
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'PayDocs Backend API' });
+});
+
 app.use(express.json({ limit: '5mb' }));
 
 const authMiddleware = (req: any, res: any, next: any) => {

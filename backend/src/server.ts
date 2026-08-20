@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-// @ts-ignore
-import Database from 'better-sqlite3';
 import { sendPasswordResetEmail, sendPayslipEmail, sendInvoiceEmail, sendQuotationEmail, sendReceiptEmail, sendOtpEmail } from './services/email';
 import { validateAuthenticEmail } from './services/verification';
 import puppeteer from 'puppeteer';
@@ -53,9 +51,7 @@ interface OtpEntry {
 }
 const otpStore = new Map<string, OtpEntry>();
 
-const dbPath = (process.env.DATABASE_URL || 'file:./dev.db').replace(/^file:/, '');
-const sqliteDb = new Database(dbPath);
-const adapter = new PrismaBetterSqlite3(sqliteDb);
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || 'file:./dev.db' });
 const prisma = new PrismaClient({ adapter });
 const app = express();
 

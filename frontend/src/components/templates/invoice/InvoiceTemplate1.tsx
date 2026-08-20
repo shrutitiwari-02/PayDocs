@@ -1,5 +1,5 @@
 import React from 'react';
-import type { InvoiceResult, InvoiceInput } from '@paydocs/shared';
+import type { InvoiceResult, InvoiceInput } from '@/lib/shared';
 
 export interface InvoiceTemplate1Props {
   input: InvoiceInput;

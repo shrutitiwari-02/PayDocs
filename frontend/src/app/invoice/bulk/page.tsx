@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InvoiceTemplate1 } from '@/components/templates/invoice/InvoiceTemplate1';
-import { calculateInvoice, InvoiceInput } from '@paydocs/shared';
+import { calculateInvoice, InvoiceInput } from '@/lib/shared';
 import { Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { GuestSaveNotice } from '@/components/GuestSaveNotice';

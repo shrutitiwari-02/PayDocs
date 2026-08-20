@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Template1 } from '@/components/templates/payslip/Template1';
 import { Template2 } from '@/components/templates/payslip/Template2';
 import { Template3 } from '@/components/templates/payslip/Template3';
-import { calculatePayslip, PayslipInput } from '@paydocs/shared';
+import { calculatePayslip, PayslipInput } from '@/lib/shared';
 import { Plus, Trash2, Download, Send, LayoutTemplate } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';

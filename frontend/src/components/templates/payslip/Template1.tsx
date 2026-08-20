@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PayslipResult, PayslipInput } from '@paydocs/shared';
+import type { PayslipResult, PayslipInput } from '@/lib/shared';
 
 // For generating the PDF, we might pass in the calculated result.
 export interface Template1Props {

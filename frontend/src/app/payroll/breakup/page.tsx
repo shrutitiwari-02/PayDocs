@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { calculateSalaryBreakup, SalaryBreakupInput, SalaryBreakupResult } from '@paydocs/shared';
+import { calculateSalaryBreakup, SalaryBreakupInput, SalaryBreakupResult } from '@/lib/shared';
 import { Calculator } from 'lucide-react';
 
 import { CurrencySelect } from '@/components/CurrencySelect';

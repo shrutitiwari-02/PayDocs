@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Calculator, ArrowRight, PieChart } from 'lucide-react';
-import { calculateCTC, CtcResult } from '@paydocs/shared';
+import { calculateCTC, CtcResult } from '@/lib/shared';
 
 import { CurrencySelect } from '@/components/CurrencySelect';
 

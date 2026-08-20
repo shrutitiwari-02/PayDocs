@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { QuotationTemplate1 } from '@/components/templates/quotation/QuotationTemplate1';
 import { QuotationTemplate2 } from '@/components/templates/quotation/QuotationTemplate2';
 import { QuotationTemplate3 } from '@/components/templates/quotation/QuotationTemplate3';
-import { calculateInvoice, InvoiceInput } from '@paydocs/shared';
+import { calculateInvoice, InvoiceInput } from '@/lib/shared';
 import { Download, FileText, Loader2, LayoutTemplate, Plus, Trash2, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';

@@ -1,15 +1,14 @@
-"use client";
+'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { API_BASE_URL } from '@/config/api';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [token, setToken] = useState<string | null>(null);
-  
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -27,16 +26,16 @@ function ResetPasswordForm() {
     }
 
     setStatus('loading');
-    
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+      const res = await fetch('http://localhost:3001/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword: password })
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         setStatus('success');
         setMessage(data.message);
@@ -66,7 +65,7 @@ function ResetPasswordForm() {
     <>
       <h2 className="text-3xl font-bold text-white mb-2 text-center">Set New Password</h2>
       <p className="text-gray-400 text-center mb-8">Choose a strong new password</p>
-      
+
       {status === 'success' ? (
         <div className="text-center space-y-4">
           <div className="bg-green-500/10 border border-green-500/50 text-green-500 px-4 py-3 rounded-lg text-sm">
@@ -83,8 +82,8 @@ function ResetPasswordForm() {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               required
               minLength={6}
               className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -92,7 +91,7 @@ function ResetPasswordForm() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button 
+          <button
             type="submit"
             disabled={status === 'loading'}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50 mt-2"

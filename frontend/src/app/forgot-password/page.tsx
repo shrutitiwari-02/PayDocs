@@ -1,7 +1,6 @@
-"use client";
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { API_BASE_URL } from '@/config/api';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -11,16 +10,16 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    
+
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+      const res = await fetch('http://localhost:3001/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         setStatus('success');
         setMessage(data.message);
@@ -39,7 +38,7 @@ export default function ForgotPassword() {
       <div className="max-w-md w-full bg-gray-900 border border-gray-800 rounded-xl shadow-xl p-8">
         <h2 className="text-3xl font-bold text-white mb-2 text-center">Reset Password</h2>
         <p className="text-gray-400 text-center mb-8">Enter your email to receive a reset link</p>
-        
+
         {status === 'success' ? (
           <div className="text-center space-y-4">
             <div className="bg-green-500/10 border border-green-500/50 text-green-500 px-4 py-3 rounded-lg text-sm">
@@ -58,15 +57,15 @@ export default function ForgotPassword() {
             )}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <button 
+            <button
               type="submit"
               disabled={status === 'loading'}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2.5 transition-colors disabled:opacity-50"

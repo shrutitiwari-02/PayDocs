@@ -56,6 +56,10 @@ const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL as strin
 const prisma = new PrismaClient({ adapter });
 const app = express();
 
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 
 const globalLimiter = rateLimit({
@@ -68,10 +72,22 @@ app.use(globalLimiter);
 
 const pdfLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // Strict limit for CPU intensive routes
+  max: 30, // Limit for CPU intensive routes
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+let sharedBrowser: any = null;
+async function getBrowserInstance() {
+  if (sharedBrowser && sharedBrowser.isConnected()) {
+    return sharedBrowser;
+  }
+  sharedBrowser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  });
+  return sharedBrowser;
+}
 
 async function setupSecurePage(browser: any, html: string) {
   const page = await browser.newPage();
@@ -92,7 +108,6 @@ async function setupSecurePage(browser: any, html: string) {
   await page.setContent(html, { waitUntil: 'load' });
   return page;
 }
-app.use(globalLimiter);
 
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
 app.use(express.json({ limit: '5mb' }));
@@ -153,17 +168,14 @@ const pdfPayslipSchema = z.object({
 });
 
 app.post('/api/pdf/payslip', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
-  let browser;
+  let page: any;
   try {
     const parseResult = pdfPayslipSchema.safeParse(req.body);
     if (!parseResult.success) return res.status(400).json({ error: 'Invalid input data' });
     const { html, type, entityName, totalAmount } = parseResult.data;
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await setupSecurePage(browser, html);
+    const browser = await getBrowserInstance();
+    page = await setupSecurePage(browser, html);
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -193,24 +205,21 @@ app.post('/api/pdf/payslip', optionalAuthMiddleware, pdfLimiter, async (req, res
     console.error('PDF Generation Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(() => {});
   }
 });
 
 // Email Payslip Route
 app.post('/api/pdf/email-payslip', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
-  let browser;
+  let page: any;
   try {
     const { html, employeeEmail, employeeName, payPeriod, totalAmount } = req.body;
     if (!html || !employeeEmail || !employeeName || !payPeriod) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await setupSecurePage(browser, html);
+    const browser = await getBrowserInstance();
+    page = await setupSecurePage(browser, html);
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -241,24 +250,21 @@ app.post('/api/pdf/email-payslip', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Payslip Error:', error);
     res.status(500).json({ error: 'Failed to email payslip' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(() => {});
   }
 });
 
 // Email Invoice Route
 app.post('/api/pdf/email-invoice', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
-  let browser;
+  let page: any;
   try {
     const { html, clientEmail, clientName, invoiceNumber, totalAmount } = req.body;
     if (!html || !clientEmail || !clientName || !invoiceNumber) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await setupSecurePage(browser, html);
+    const browser = await getBrowserInstance();
+    page = await setupSecurePage(browser, html);
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -289,24 +295,21 @@ app.post('/api/pdf/email-invoice', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Invoice Error:', error);
     res.status(500).json({ error: 'Failed to email invoice' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(() => {});
   }
 });
 
 // Email Quotation Route
 app.post('/api/pdf/email-quotation', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
-  let browser;
+  let page: any;
   try {
     const { html, clientEmail, clientName, quotationNumber, totalAmount } = req.body;
     if (!html || !clientEmail || !clientName || !quotationNumber) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await setupSecurePage(browser, html);
+    const browser = await getBrowserInstance();
+    page = await setupSecurePage(browser, html);
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -337,24 +340,21 @@ app.post('/api/pdf/email-quotation', optionalAuthMiddleware, pdfLimiter, async (
     console.error('Email Quotation Error:', error);
     res.status(500).json({ error: 'Failed to email quotation' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(() => {});
   }
 });
 
 // Email Receipt Route
 app.post('/api/pdf/email-receipt', optionalAuthMiddleware, pdfLimiter, async (req, res) => {
-  let browser;
+  let page: any;
   try {
     const { html, clientEmail, clientName, receiptNumber, totalAmount } = req.body;
     if (!html || !clientEmail || !clientName || !receiptNumber) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await setupSecurePage(browser, html);
+    const browser = await getBrowserInstance();
+    page = await setupSecurePage(browser, html);
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -385,7 +385,7 @@ app.post('/api/pdf/email-receipt', optionalAuthMiddleware, pdfLimiter, async (re
     console.error('Email Receipt Error:', error);
     res.status(500).json({ error: 'Failed to email receipt' });
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(() => {});
   }
 });
 

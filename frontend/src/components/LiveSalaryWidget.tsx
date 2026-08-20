@@ -151,8 +151,8 @@ export function LiveSalaryWidget() {
               </Button>
             </Link>
             <Link href="/payroll/breakup" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full font-semibold border-white/20 text-white hover:bg-white/10 rounded-xl">
-                Breakup Tool
+              <Button className="w-full font-bold bg-white/10 hover:bg-white/20 text-white border border-white/25 rounded-xl shadow-xs transition-colors">
+                Salary Breakup Tool
               </Button>
             </Link>
           </div>

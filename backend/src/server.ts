@@ -91,21 +91,11 @@ async function getBrowserInstance() {
 
 async function setupSecurePage(browser: any, html: string) {
   const page = await browser.newPage();
-  await page.setRequestInterception(true);
-  page.on('request', (req: any) => {
-    const type = req.resourceType();
-    // Block potentially malicious scripts/requests, allow Tailwind CDN
-    if (['script', 'xhr', 'fetch', 'websocket'].includes(type)) {
-      if (req.url().startsWith('https://cdn.tailwindcss.com')) {
-        req.continue();
-      } else {
-        req.abort();
-      }
-    } else {
-      req.continue();
-    }
-  });
-  await page.setContent(html, { waitUntil: 'load' });
+  try {
+    await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  } catch (err) {
+    console.warn('Puppeteer setContent warning, proceeding with PDF generation:', err);
+  }
   return page;
 }
 
